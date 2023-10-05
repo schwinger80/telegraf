@@ -97,12 +97,7 @@ func (g *GPFSStats) Gather(acc telegraf.Accumulator) error {
         return nil
 }
 
-
 func init() {
-        inputs.Add("gpfs_stats", func() telegraf.Input {
-                return &GPFSStats{
-                        Command: "mmpmon -p -c 'fs_io_s'",
-                }
-        })
+    inputs.Add("gpfs", func() telegraf.Input { return &Gpfs{} })
 }
 
