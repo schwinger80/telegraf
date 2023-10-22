@@ -20,8 +20,8 @@ func TestGPFSIO_Gather(t *testing.T) {
 		t.Errorf("Fehler beim Ausführen von Gather: %v", err)
 	}
 
-	// Überprüfen Sie die gesammelten Metriken und Tags
-	expectedMetrics := []testutil.Metric{
+	// Erstellen Sie eine Slice von telegraf.Metric für erwartete Metriken
+	expectedMetrics := []telegraf.Metric{
 		// Hier können Sie erwartete Metriken hinzufügen, die Sie erwarten.
 		// Beispiel: testutil.MustMetric(
 		//     "gpfs_io_mmpmon",
