@@ -6,9 +6,14 @@ import (
 	"os"
 	"strings"
 	"strconv"
-	"github.com/influxdata/telegraf"
-	"github.com/influxdata/telegraf/plugins/inputs"
+	"fmt"
 )
+
+// Metric ist eine benutzerdefinierte Struktur, um Metriken zu speichern
+type Metric struct {
+	Tags   map[string]string
+	Fields map[string]interface{}
+}
 
 type GPFSIO struct {
 	PipePath string `toml:"pipe_path"`
@@ -30,7 +35,7 @@ func (g *GPFSIO) Init() error {
 	return nil
 }
 
-func (g *GPFSIO) Gather(acc telegraf.Accumulator) error {
+func (g *GPFSIO) Gather() ([]Metric, error) {
 	// Öffnen Sie die Named Pipe zum Lesen
 	pipe, err := os.Open(g.PipePath)
 	if err != nil {
@@ -39,12 +44,14 @@ func (g *GPFSIO) Gather(acc telegraf.Accumulator) error {
 		} else {
 			log.Fatalf("Fehler beim Öffnen der Named Pipe: %v", err)
 		}
-		return err
+		return nil, err
 	}
 	defer pipe.Close()
 
 	// Erstellen Sie einen Scanner, um die Zeilen aus der Named Pipe zu lesen
 	scanner := bufio.NewScanner(pipe)
+
+	var metrics []Metric
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -131,8 +138,11 @@ func (g *GPFSIO) Gather(acc telegraf.Accumulator) error {
 			}
 		}
 
-		// Daten in das Telegraf-Datenmodell umwandeln und an den Akkumulator senden
-		acc.AddFields("gpfs_io_mmpmon", fields, tags)
+		// Fügen Sie die Metrik zur Liste der Metriken hinzu
+		metrics = append(metrics, Metric{
+			Tags:   tags,
+			Fields: fields,
+		})
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -141,10 +151,10 @@ func (g *GPFSIO) Gather(acc telegraf.Accumulator) error {
 		} else {
 			log.Fatalf("Fehler beim Lesen der Named Pipe: %v", err)
 		}
-		return err
+		return nil, err
 	}
 
-	return nil
+	return metrics, nil
 }
 
 func init() {
@@ -152,5 +162,3 @@ func init() {
 		return &GPFSIO{}
 	})
 }
-
-
