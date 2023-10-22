@@ -2,8 +2,6 @@ package gpfs_io
 
 import (
 	"testing"
-	"log"
-	"strings"
 	"strconv"
 )
 
@@ -13,11 +11,11 @@ func TestGPFSIO_Gather(t *testing.T) {
 		PipePath: "/path/to/your/namedpipe",
 	}
 
-	// Erstellen Sie einen Akkumulator für Testzwecke (eine einfache Map)
-	acc := make(map[string]interface{})
+	// Erstellen Sie eine einfache Map, um die gesammelten Daten zu speichern
+	collectedData := map[string]interface{}{}
 
-	// Rufen Sie die Gather-Methode Ihres Plugins auf
-	err := g.Gather(acc)
+	// Rufen Sie die Gather-Methode Ihres Plugins auf und übergeben die Map
+	err := g.Gather(collectedData)
 	if err != nil {
 		t.Errorf("Fehler beim Ausführen von Gather: %v", err)
 	}
@@ -42,7 +40,7 @@ func TestGPFSIO_Gather(t *testing.T) {
 
 	// Vergleichen Sie die gesammelten Daten mit den erwarteten Werten
 	for field, expectedValue := range expectedMetrics {
-		actualValue, found := acc[field]
+		actualValue, found := collectedData[field]
 		if !found {
 			t.Errorf("Feld %s nicht in den gesammelten Daten gefunden", field)
 		}
