@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"os"
 	"strings"
+	"log"
 	"strconv"
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/plugins/inputs"
