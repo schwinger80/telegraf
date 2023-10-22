@@ -1,40 +1,44 @@
-// go:generate ../../../tools/readme_config_includer/generator
-package gpfs
+package gpfs_io
 
 import (
 	"bufio"
+	"log"
 	"os"
 	"strings"
-	"log"
 	"strconv"
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/plugins/inputs"
 )
 
-//go:embed sample.conf
-var sampleConfig string
-
-type GPFS struct {
-	PipePath string         `toml:"pipe_path"`
-	Log      telegraf.Logger `toml:"-"`
+type GPFSIO struct {
+	PipePath string `toml:"pipe_path"`
+	Log      telegraf.Logger
 }
 
-func (*GPFS) SampleConfig() string {
-	return sampleConfig
+func (g *GPFSIO) Description() string {
+	return "GPFS I/O MMPMon Input Plugin"
 }
 
-func (g *GPFS) Init() error {
+func (g *GPFSIO) SampleConfig() string {
+	return `
+      ## Konfigurationsparameter hier, falls benötigt
+    `
+}
+
+func (g *GPFSIO) Init() error {
 	// Hier können Sie eine Überprüfung durchführen, ob die named pipe existiert oder andere Initialisierungen.
 	return nil
 }
-func (g *GPFS) Gather(acc telegraf.Accumulator) error {
-	// Name der Named Pipe (FIFO) anpassen
-	pipeName := "/path/to/your/namedpipe"
 
+func (g *GPFSIO) Gather(acc telegraf.Accumulator) error {
 	// Öffnen Sie die Named Pipe zum Lesen
-	pipe, err := os.Open(pipeName)
+	pipe, err := os.Open(g.PipePath)
 	if err != nil {
-		log.Fatalf("Fehler beim Öffnen der Named Pipe: %v", err)
+		if g.Log != nil {
+			g.Log.Errorf("Fehler beim Öffnen der Named Pipe: %v", err)
+		} else {
+			log.Fatalf("Fehler beim Öffnen der Named Pipe: %v", err)
+		}
 		return err
 	}
 	defer pipe.Close()
@@ -128,11 +132,15 @@ func (g *GPFS) Gather(acc telegraf.Accumulator) error {
 		}
 
 		// Daten in das Telegraf-Datenmodell umwandeln und an den Akkumulator senden
-		acc.AddFields("gpfs_mmpmon", fields, tags)
+		acc.AddFields("gpfs_io_mmpmon", fields, tags)
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Fatalf("Fehler beim Lesen der Named Pipe: %v", err)
+		if g.Log != nil {
+			g.Log.Errorf("Fehler beim Lesen der Named Pipe: %v", err)
+		} else {
+			log.Fatalf("Fehler beim Lesen der Named Pipe: %v", err)
+		}
 		return err
 	}
 
@@ -140,6 +148,9 @@ func (g *GPFS) Gather(acc telegraf.Accumulator) error {
 }
 
 func init() {
-	inputs.Add("gpfs", func() telegraf.Input { return &gpfs{} })
+	inputs.Add("gpfs_io", func() telegraf.Input {
+		return &GPFSIO{}
+	})
 }
+
 
