@@ -1,72 +1,55 @@
-package gpfs
+package gpfs_io
 
 import (
-        "errors"
-        "testing"
-        "bufio"
-        "strings"
-        "github.com/influxdata/telegraf/testutil"
-        "github.com/stretchr/testify/require"
+	"testing"
+	"github.com/influxdata/telegraf/testutil"
 )
 
-type MockCommandRunner struct {
-        Command string
-        Output  string
-        Err     error
-}
+func TestGPFSIO_Gather(t *testing.T) {
+	// Erstellen Sie eine Instanz Ihres Plugins mit den gewünschten Konfigurationsoptionen
+	g := &GPFSIO{
+		PipePath: "/path/to/your/namedpipe",
+	}
 
-func (m *MockCommandRunner) RunCommand(command string) (*bufio.Scanner, error) {
-   if command != m.Command {
-      return nil, errors.New("unexpected command")
-   }
-   return bufio.NewScanner(strings.NewReader(m.Output)), m.Err
-}
+	// Erstellen Sie einen Akkumulator für Testzwecke
+	acc := testutil.Accumulator{}
 
+	// Rufen Sie die Gather-Methode Ihres Plugins auf
+	err := g.Gather(&acc)
+	if err != nil {
+		t.Errorf("Fehler beim Ausführen von Gather: %v", err)
+	}
 
-func TestGPFSStats(t *testing.T) {
-        tests := []struct {
-                name    string
-                command string
-                output  string
-                err     error
-                metrics map[string]interface{}
-        }{
-                // Beispieltestfälle hier hinzufügen
-                {
-                        name:    "valid case",
-                        command: "mmpmon -p -c 'fs_io_s'",
-                        output:  "92.1 MB/sec read      0.1 MB/sec write",
-                        err:     nil,
-                        metrics: map[string]interface{}{
-                                "read_rate":  92.1,
-                                "write_rate": 0.1,
-                        },
-                },
-        }
+	// Überprüfen Sie die gesammelten Metriken und Tags
+	expectedMetrics := []testutil.Metric{
+		// Hier können Sie erwartete Metriken hinzufügen, die Sie erwarten.
+		// Beispiel: testutil.MustMetric(
+		//     "gpfs_io_mmpmon",
+		//     map[string]string{
+		//         "ip_address":   "10.156.153.84",
+		//         "hostname":     "hpdar03c04s08",
+		//         "cluster_name": "LRZ_DSS03.dss.lrz.de",
+		//         // Weitere Tags hier
+		//     },
+		//     map[string]interface{}{
+		//         "status_code":    0,
+		//         "timestamp":      int64(1697982519),
+		//         "microseconds":   int(24222),
+		//         "disk_count":     int(84),
+		//         "bytes_read":     uint64(22794336358085),
+		//         "bytes_written":  uint64(0),
+		//         "open_calls":     int(127818),
+		//         "close_calls":    int(127817),
+		//         "read_calls":     int(34356262),
+		//         "write_calls":    int(0),
+		//         "readdir_calls":  int(46906),
+		//         "inode_updates":  int(76710),
+		//         // Weitere Felder hier
+		//     },
+		//     int64(1697982519),
+		// )
+	}
 
-        for _, tt := range tests {
-                t.Run(tt.name, func(t *testing.T) {
-                        mcr := &MockCommandRunner{
-                                Command: tt.command,
-                                Output:  tt.output,
-                                Err:     tt.err,
-                        }
-                        gpfsStats := &GPFSStats{
-                                Command: tt.command,
-                                Runner:  mcr,
-                        }
-
-                        var acc testutil.Accumulator
-
-                        err := gpfsStats.Gather(&acc)
-                        require.NoError(t, err)
-
-                        for k, v := range tt.metrics {
-                                require.True(t, acc.HasMeasurement(k),
-                                        "missing measurement: %q: %v", k, v)
-
-                        }
-                })
-        }
-
+	// Überprüfen Sie, ob die tatsächlichen Metriken den erwarteten Metriken entsprechen
+	testutil.RequireMetricsEqual(t, expectedMetrics, acc.GetTelegrafMetrics())
 }
