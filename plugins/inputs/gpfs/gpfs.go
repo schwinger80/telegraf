@@ -5,7 +5,7 @@ import (
 	"bufio"
 	"os"
 	"strings"
-
+	"strconv"
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/plugins/inputs"
 )
@@ -134,32 +134,6 @@ func (g *GPFS) Gather(acc telegraf.Accumulator) error {
 		log.Fatalf("Fehler beim Lesen der Named Pipe: %v", err)
 		return err
 	}
-
-	return nil
-}
-
-
-func (g *GPFS) Gather(acc telegraf.Accumulator) error {
-	pipe, err := os.Open(g.PipePath)
-	if err != nil {
-		return err
-	}
-	defer pipe.Close()
-
-	reader := bufio.NewReader(pipe)
-	line, _, err := reader.ReadLine()
-	if err != nil {
-		return err
-	}
-
-	// Hier ist eine einfache Annahme: Der String ist "key=value"
-	parts := strings.Split(string(line), "=")
-	if len(parts) != 2 {
-		return fmt.Errorf("Unexpected format: %s", line)
-	}
-
-	// Speichert den Wert im Telegraf-Akkumulator
-	acc.AddFields("gpfs", map[string]interface{}{parts[0]: parts[1]}, nil)
 
 	return nil
 }
