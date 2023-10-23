@@ -23,7 +23,7 @@ func TestGPFSIO_Gather(t *testing.T) {
 
 	// Überprüfen Sie, ob die gesammelten Daten den erwarteten Werten entsprechen
 	expectedMetrics := []telegraf.Metric{
-		testutil.MustMetric(
+		telegraf.MustMetric(
 			"gpfs_io_mmpmon",
 			map[string]string{
 				"_n_":  "10.156.153.84",
