@@ -10,7 +10,7 @@ import (
 func TestGPFSIO_Gather(t *testing.T) {
 	// Erstellen Sie eine Instanz Ihres Plugins mit den gewünschten Konfigurationsoptionen
 	g := &GPFSIO{
-		PipePath: "/path/to/your/namedpipe",
+		PipePath: "/tmp/mmpmon.out",
 	}
 
 	// Erstellen Sie eine leere Instanz von testutil.Accumulator
