@@ -59,7 +59,7 @@ for i, word := range words {
 		fields := make(map[string]interface{})
 		tags := make(map[string]string)
 
-		for i := 0; i < len(words); i += 2 {
+		for i := 1; i < len(words); i += 2 {
 			keyword := words[i]
 			value := words[i+1]
 
