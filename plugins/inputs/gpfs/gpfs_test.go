@@ -1,6 +1,7 @@
 package gpfs_io
 
 import (
+	"time"
 	"testing"
 	"github.com/influxdata/telegraf/testutil"
 	"github.com/influxdata/telegraf"
