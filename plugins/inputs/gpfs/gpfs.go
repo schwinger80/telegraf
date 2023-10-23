@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"time"
 	"strings"
 	"strconv"
 	"github.com/influxdata/telegraf"
