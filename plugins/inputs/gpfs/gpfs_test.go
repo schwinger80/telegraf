@@ -2,7 +2,6 @@ package gpfs_io
 
 import (
 	"testing"
-	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/testutil"
 )
 
@@ -22,8 +21,9 @@ func TestGPFSIO_Gather(t *testing.T) {
 	}
 
 	// Überprüfen Sie, ob die gesammelten Daten den erwarteten Werten entsprechen
-	expectedMetrics := []telegraf.Metric{
-		telegraf.NewMetric(
+	expectedMetrics := []testutil.Metric{
+		testutil.MustMetric(
+			"gpfs_io_mmpmon",
 			map[string]string{
 				"_n_":  "10.156.153.84",
 				"_nn_": "hpdar03c04s08",
