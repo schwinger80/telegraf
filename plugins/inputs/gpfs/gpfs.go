@@ -45,6 +45,8 @@ func (g *GPFSIO) Gather(acc telegraf.Accumulator) error {
 
 	// Erstellen Sie einen Scanner, um die Zeilen aus der Named Pipe zu lesen
 	scanner := bufio.NewScanner(pipe)
+
+	var timestamp time.Time
 	
 	for scanner.Scan() {
 		line := scanner.Text()
