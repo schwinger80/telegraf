@@ -12,16 +12,16 @@ func TestGPFSIO_Gather(t *testing.T) {
 	}
 
 	// Erstellen Sie eine leere Instanz von testutil.Accumulator
-	acc := &testutil.Accumulator{}
+	acc := testutil.Accumulator{}
 
 	// Rufen Sie die Gather-Methode Ihres Plugins auf und übergeben die Instanz von testutil.Accumulator
-	err := g.Gather(acc)
+	err := g.Gather(&acc)
 	if err != nil {
 		t.Errorf("Fehler beim Ausführen von Gather: %v", err)
 	}
 
-	// Überprüfen Sie, ob die gesammelten Daten den erwarteten Werten entsprechen
-	expectedMetrics := []testutil.Metric{
+	// Erstellen Sie erwartete Metriken mit testutil.MustMetric
+	expectedMetrics := []telegraf.Metric{
 		testutil.MustMetric(
 			"gpfs_io_mmpmon",
 			map[string]string{
