@@ -53,7 +53,7 @@ func (g *GPFSIO) Gather(acc telegraf.Accumulator) error {
 		words := strings.Fields(line)
 
 for i, word := range words {
-    g.Log.Errorf("("Wort %d: %s\n", i, word)
+    g.Log.Errorf("Wort %d: %s\n", i, word)
 }
 
 		fields := make(map[string]interface{})
