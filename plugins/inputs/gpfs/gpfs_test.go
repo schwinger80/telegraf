@@ -45,6 +45,8 @@ func TestGPFSIO_Gather(t *testing.T) {
 				"_dir_":          int64(46906),
 				"_iu_":           int64(76710),
 			},
+			time.Now(),
+			telegraf.Untyped,
 		),
 		// Weitere erwartete Metriken hier hinzufügen, falls erforderlich
 	}
