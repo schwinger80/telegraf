@@ -46,6 +46,10 @@ func (g *GPFSIO) Gather(acc telegraf.Accumulator) error {
 	// Erstellen Sie einen Scanner, um die Zeilen aus der Named Pipe zu lesen
 	scanner := bufio.NewScanner(pipe)
 
+	// Initialisieren der Variablen zum sammeln der MEtriken
+	fields := make(map[string]interface{})
+	tags := make(map[string]string)
+	
 	for scanner.Scan() {
 		line := scanner.Text()
 
