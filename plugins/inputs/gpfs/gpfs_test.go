@@ -3,6 +3,7 @@ package gpfs_io
 import (
 	"testing"
 	"github.com/influxdata/telegraf/testutil"
+	"github.com/influxdata/telegraf"
 )
 
 func TestGPFSIO_Gather(t *testing.T) {
