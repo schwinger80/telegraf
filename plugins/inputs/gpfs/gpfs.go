@@ -51,11 +51,7 @@ func (g *GPFSIO) Gather(acc telegraf.Accumulator) error {
 
 		// Hier MMPMON-Ausgabe analysieren
 		words := strings.Fields(line)
-
-for i, word := range words {
-    g.Log.Errorf("Wort %d: %s\n", i, word)
-}
-
+		
 		fields := make(map[string]interface{})
 		tags := make(map[string]string)
 
@@ -74,15 +70,16 @@ for i, word := range words {
 					fields["status_code"] = rc
 				}
 			case "_t_":
-				timestamp, err := strconv.ParseInt(value, 10, 64)
-				if err == nil {
-					fields["timestamp"] = timestamp
-				}
-			case "_tu_":
-				microseconds, err := strconv.Atoi(value)
-				if err == nil {
-					fields["microseconds"] = microseconds
-				}
+            			unixTimestamp, err := strconv.ParseInt(value, 10, 64)
+            			if err == nil {
+               				timestamp = time.Unix(unixTimestamp, 0) // Konvertieren Sie den Unix-Zeitstempel in ein time.Time-Objekt
+            			}
+        		case "_tu_":
+            			microseconds, err := strconv.Atoi(value)
+            			if err == nil {
+                			// Mikrosekunden-Werte zu Ihrem Zeitstempel hinzufügen
+                			timestamp = timestamp.Add(time.Duration(microseconds) * time.Microsecond)
+            			}
 			case "_cl_":
 				tags["cluster_name"] = value
 			case "_fs_":
@@ -134,7 +131,11 @@ for i, word := range words {
 				}
 			}
 		}
-
+		// Überprüfen Sie, ob der Zeitstempel festgelegt ist, bevor Sie die Metrik erstellen
+	    	if !timestamp.IsZero() {
+     		   fields["timestamp"] = timestamp
+		}	
+		
 		// Daten in das Telegraf-Datenmodell umwandeln und an den Akkumulator senden
 		acc.AddFields("gpfs_io_mmpmon", fields, tags)
 	}
