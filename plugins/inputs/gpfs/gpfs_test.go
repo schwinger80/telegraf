@@ -2,7 +2,6 @@ package gpfs_io
 
 import (
 	"testing"
-	"strconv"
 	"github.com/influxdata/telegraf"
 	"github.com/influxdata/telegraf/testutil"
 )
@@ -23,7 +22,7 @@ func TestGPFSIO_Gather(t *testing.T) {
 	}
 
 	// Überprüfen Sie, ob die gesammelten Daten den erwarteten Werten entsprechen
-	expectedMetrics := []testutil.Metric{
+	expectedMetrics := []telegraf.Metric{
 		testutil.MustMetric(
 			"gpfs_io_mmpmon",
 			map[string]string{
@@ -33,18 +32,18 @@ func TestGPFSIO_Gather(t *testing.T) {
 				"_fs_": "dsstbyfs01",
 			},
 			map[string]interface{}{
-				"_rc_":           0,
+				"_rc_":           int64(0),
 				"_t_":            int64(1697982519),
-				"_tu_":           24222,
-				"_d_":            84,
-				"_br_":           uint64(22794336358085),
-				"_bw_":           uint64(0),
-				"_oc_":           127818,
-				"_cc_":           127817,
-				"_rdc_":          34356262,
-				"_wc_":           0,
-				"_dir_":          46906,
-				"_iu_":           76710,
+				"_tu_":           int64(24222),
+				"_d_":            int64(84),
+				"_br_":           int64(22794336358085),
+				"_bw_":           int64(0),
+				"_oc_":           int64(127818),
+				"_cc_":           int64(127817),
+				"_rdc_":          int64(34356262),
+				"_wc_":           int64(0),
+				"_dir_":          int64(46906),
+				"_iu_":           int64(76710),
 			},
 		),
 		// Weitere erwartete Metriken hier hinzufügen, falls erforderlich
